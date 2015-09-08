@@ -4,7 +4,7 @@ DEBUG = True
 # Define the application directory
 # Define the database - we are working with
 # SQLite for this example
-#SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://%s:%s@%s/%s' % ('fwp_user','Ultimate#100','NZDUN1L4001490','fwp')
+#SQLALCHEMY_DATABASE_URI = 'mssql+pyodbc://%s:%s@%s/%s' % ('login','password','server','db')
 #DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is
