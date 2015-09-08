@@ -1,0 +1,65 @@
+{% from "macros/navlink.html" import nav_link with context %}
+
+{% macro nav_bar(name) %}
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">Coastal Otago - Information Portal</a>
+    </div>
+       
+
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+                <li>
+                    <a href="ramm_login.html"><i class="glyphicon glyphicon-log-in"></i>  RAMM Login</a>
+                </li>
+                <li>
+                    <a href="index.html"><i class="fa fa-dashboard fa-fw"></i>  Dashboard</a>
+                </li>
+                <li>
+                    <a href="#"><i class="glyphicon glyphicon-search"></i>  Network Information<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        {{nav_link(name="Surface Explorer", url="surface_explorer.html", active=name, class="glyphicon glyphicon-align-left")}}
+                        {{nav_link(name="Pavement Explorer", url="pavement_explorer.html", active=name, class="glyphicon glyphicon-align-left")}}
+                        {{nav_link(name="RAMM Asset Lookup", url="pavement_explorer.html", active=name, class="glyphicon glyphicon-road")}}
+                        {{nav_link(name="NOMAD (FWP)", url="nomad.html", active=name, class="glyphicon glyphicon-tasks")}}
+                        {{nav_link(name="CAS Mapping", url="cas.html", active=name, class="fa fa-globe")}}                                                
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+                <li>
+                    <a href="#"><i class="glyphicon glyphicon-search"></i>  Network Activity<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        {{nav_link(name="Monthly Compliance Results", url="compliance.html", active=name, class="fa fa-signal")}}
+                        {{nav_link(name="Maintenance Activity", url="mc_maps.html", active=name, class="fa fa-globe")}}
+                        {{nav_link(name="Asset Activity", url="asset_maps.html", active=name, class="fa fa-globe")}}
+                        {{nav_link(name="TMPs", url="tmp.html", active=nam, class="fa fa-globe")}}
+                        {{nav_link(name="TREIS", url="tmp.html", active=nam, class="fa fa-globe")}}                         
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-bar-chart-o"></i>  Condition Charts<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        {{nav_link(name="SCRIM Charts", url="scrim.html", active=name, class="fa fa-bar-chart-o")}}
+                        {{nav_link(name="Rutting Charts", url="rutting.html", active=name, class="fa fa-bar-chart-o")}}
+                        {{nav_link(name="Roughness Charts", url="roughness.html", active=name, class="fa fa-bar-chart-o")}}
+                        {{nav_link(name="Texture Charts", url="texture.html", active=nam, class="fa fa-bar-chart-o")}}
+                        {{nav_link(name="Geometry Charts", url="geometry.html", active=nam, class="fa fa-bar-chart-o")}}                     
+                    </ul>
+                    <!-- /.nav-second-level -->
+                </li>                 
+            </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
+    </div>
+    <!-- /.navbar-static-side -->
+</nav>
+{% endmacro %}

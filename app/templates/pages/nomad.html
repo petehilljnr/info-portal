@@ -1,0 +1,464 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">{{title}}<button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+                                Select Period
+                            </button></h1>
+
+        </div>
+        
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->    
+    <div class="row">
+        <div class="col-lg-10">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Maintenance Activity Map                  
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div id="map" style="height: 750px"></div>
+                </div>
+
+            </div>
+                <!-- /.panel-body -->
+        </div>
+        <div class="col-lg-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Top 10 Cost Clusters                
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div id="fly" class="list-group">
+
+                    </div>
+                </div>
+
+            </div>
+                <!-- /.panel-body -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Costs by Group                  
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" id='costgroup_panel'>
+                    <div id='rowchart_costgroup'>
+                    </div>
+                </div>
+
+            </div>
+                <!-- /.panel-body -->
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Costs by Activity                  
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" id='activity_panel'>
+                    <div id='rowchart_activity'>
+                    </div>
+                </div>
+
+            </div>
+                <!-- /.panel-body -->
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Costs by Fault                 
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body" id="fault_panel">
+                    <div id='rowchart_fault'>
+                    </div>
+                </div>
+
+            </div>
+                <!-- /.panel-body -->
+        </div>
+    </div>
+    <!-- /.row --> 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Time Period Selection</h4>
+                </div>
+                <div class="modal-body">
+                    <label class="col-xs-3 control-label">Start Date</label>
+                    <div class="form-group">
+                        <div class='input-group date' id='start_date'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <label class="col-xs-3 control-label">End Date</label>
+                    <div class="form-group">
+                        <div class='input-group date' id='end_date'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Process Charts</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+<!-- /#page-wrapper -->
+
+{% endblock %}
+
+{% block pagescript %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.3/dc.min.js" charset="utf-8"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.js" charset="utf-8"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/bower_components/proj4/dist/proj4.js"></script>
+    <script type="text/javascript" src="/dist/js/ol-debug.js"></script>
+    <link rel="stylesheet" href="/dist/css/ol.css" />
+    <script type="text/javascript" src="/bower_components/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dc/1.7.3/dc.min.css" />
+    <style>   
+        .dc-chart g.row rect {
+            fill-opacity: 1;
+        }
+        .dc-chart g.row text {fill: #000;}
+    </style>
+    <script>
+        var maxCost=0 , minCost=Infinity, zoom = -1; 
+        $(function () { 
+            var data={{ map_data | safe }}
+            
+
+            $('#start_date').datetimepicker({format: "DD/MM/YYYY"}); 
+            $('#end_date').datetimepicker({format: "DD/MM/YYYY"}); 
+
+            proj4.defs("EPSG:27200", "+proj=nzmg +lat_0=-41 +lon_0=173 +x_0=2510000 +y_0=6023150 +ellps=intl +datum=nzgd49 +units=m +no_defs"); 
+
+            
+            var cost_groups={}; 
+
+            cost_groups['BR']={ label: 'BRIDGE MAINT', color: '#a6cee3'}; 
+            cost_groups['DR']={ label: 'DRAINAGE', color: '#1f78b4'}; 
+            cost_groups['EN']={ label: 'ENVIRONMENT', color: '#b2df8a'}; 
+            cost_groups['MS']={ label: 'MINOR STRUCT', color: '#33a02c'}; 
+            cost_groups['PA']={ label: 'PAVEMENT', color: '#fb9a99'}; 
+            cost_groups['SH']={ label: 'SHOULDER', color: '#e31a1c'}; 
+            cost_groups['SU']={ label: 'SURFACING', color: '#fdbf6f'}; 
+            cost_groups['TF']={ label: 'TRAFF FACIL', color: '#ff7f00'}; 
+            cost_groups['VG']={ label: 'VERGE', color: '#cab2d6'}; 
+            cost_groups['OT']={ label: 'OTHER', color: '#6a3d9a'}; // <-- anything that doesn 't fit into the above groups gets coded as Other
+
+        var i = 1;
+
+        var dxf_data = []
+        var features = []
+        var format=new ol.format.WKT(); 
+
+        $.each(data, function(index, value){
+            var cost_group = value[3]
+            var activity = value[4]
+            var fault = value[5]
+            var cost = value[6]
+            if(!(cost_groups[cost_group]))
+                cost_group = 'OT'
+
+            var feature = format.readFeature(value[8]);
+            feature.getGeometry().transform('EPSG:27200', 'EPSG:3857');
+            //feature.setId(i);
+            //feature.set('visible ', true)
+            //feature.set('cost_group ',cost_groups[cost_group].label)
+            //features.push(feature);
+            feature.set('cost', Math.round(cost))
+            features.push(feature) // for the initial load
+            dxf_data.push({cost_group: cost_groups[cost_group].label, activity: activity, fault: fault, cost: Math.round(cost), id: i, feature: feature});
+
+            i++;
+        });
+
+        var layers = [new ol.layer.Tile({
+                    source: new ol.source.Stamen({
+                        layer: 'toner-lite'
+                    })
+                })]
+        
+
+        var colors = [], groups = [];  // this is to use in row charts colorAccessor function
+        
+
+        for(var cost_group in cost_groups){
+            groups.push(cost_groups[cost_group].label)
+            colors.push(cost_groups[cost_group].color)
+        }
+        var colourScale = d3.scale.ordinal().domain(groups).range(colors); // now have a colorAccessor
+        var styleCache = {}
+        var featureSource = new ol.source.Vector({features: []})
+        var clusterSource = new ol.source.Cluster({distance: 50, source: featureSource})
+        
+
+        var feature_layer = new ol.layer.Vector({
+                    source: clusterSource,
+                    style: function(feature, resolution) {
+                        var cluster = feature.get('features');
+                        var  total_cost = feature.get('total_cost');
+                        total_cost = Math.round(total_cost)
+                        var clusterColour = d3.scale.linear().domain([minCost, ((maxCost - minCost) / 2) + minCost, maxCost]).range(['#66FF33','#FFFF00','#FF0000']);
+
+
+                        var style = [new ol.style.Style({
+                                image: new ol.style.Circle({
+                              radius: 20,
+                              stroke: new ol.style.Stroke({
+                                color: clusterColour(total_cost)
+                              }),
+                              fill: new ol.style.Fill({
+                                color: clusterColour(total_cost)
+                              })
+                            }),
+                            text: new ol.style.Text({
+                              text: formatCostText(total_cost),
+                              fill: new ol.style.Fill({color: 'rgba(0, 0, 0)'}),
+                              stroke: new ol.style.Stroke({color: '#fff' ,  width: 3}),
+                              font: 'bold 11px Arial'
+                            })
+                          })];
+                          styleCache[total_cost] = style;
+
+                        return style;
+                      }
+                    });
+        feature_layer.getSource().on('addfeature',function(event) {
+          var all_features = event.feature.get('features');
+          var costSum = 0;
+          all_features.forEach(function(b) {
+            costSum = costSum + b.get('cost');
+          })
+          event.feature.set('total_cost', costSum)
+          }
+        );
+        layers.push(feature_layer)
+
+        var map = new ol.Map({
+            target: 'map',
+            layers: layers,
+            view: new ol.View({
+                center: ol.proj.transform([2223943.16,5518918.73], 'EPSG:27200','EPSG:3857'),
+                zoom: 8
+            })
+
+        });
+
+        map.on('moveend',function() { 
+            if (zoom != map.getView().getZoom()) {
+                calculateClusterInfo()
+                zoom = map.getView().getZoom()
+            }
+        });
+
+        calculateClusterInfo()
+        featureSource.addFeatures(features);
+
+        var dxf = crossfilter(dxf_data);
+        var all = dxf.groupAll()
+
+        var costgroup_dim = dxf.dimension(function(d) { return d.cost_group; });
+        var costgroup_cost = costgroup_dim.group().reduceSum(function(d) {return d.cost;});
+        var costgroup_chart = dc.rowChart('#rowchart_costgroup')
+
+        var activity_dim = dxf.dimension(function(d) { return d.activity; });
+        var activity_cost = activity_dim.group().reduceSum(function(d) {return d.cost;});
+        var activity_chart = dc.rowChart('#rowchart_activity')
+
+        var fault_dim = dxf.dimension(function(d) { return d.fault; });
+        var fault_cost = fault_dim.group().reduceSum(function(d) {return d.cost;});
+        var fault_chart = dc.rowChart('#rowchart_fault')
+
+        var onFiltered = function() {
+            featureSource.clear()
+            var newFeatures = []
+            $.each(costgroup_dim.top(Infinity), function(i,v) {
+                newFeatures.push(v.feature)
+            })
+            featureSource.addFeatures(newFeatures)
+            calculateClusterInfo()
+                          
+        }
+
+        costgroup_chart.width($('#costgroup_panel').width())
+                    .height((costgroup_cost.all().length + 1) * 40)
+                    .margins({top: 5, right: 20, bottom: 40, left: 40 })
+                    .transitionDuration(500)
+                    .dimension(costgroup_dim)
+                    .group(costgroup_cost)
+                    .ordering(function(d) { return -d.value;})
+                    .elasticX(true)
+                    .renderlet(function(chart){
+                       chart.selectAll("g.row rect").attr("fill", function(d){
+                            return colourScale(d.key); 
+                        });})
+                    .on('filtered',onFiltered)
+                    .xAxis().ticks(5);
+
+        activity_chart.width($('#activity_panel').width())
+                    .height((activity_cost.all().length + 1) * 40)
+                    .margins({top: 5, right: 20, bottom: 40, left: 40 })
+                    .transitionDuration(500)
+                    .dimension(activity_dim)
+                    .group(activity_cost)
+                    .elasticX(true)
+                    .ordering(function(d) { return -d.value;})
+                    .on('filtered',onFiltered)
+                    .xAxis().ticks(5);
+        
+        fault_chart.width($('#fault_panel').width())
+                    .height((fault_cost.all().length + 1) * 40)
+                    .margins({top: 5, right: 20, bottom: 40, left: 40 })
+                    .transitionDuration(500)
+                    .dimension(fault_dim)
+                    .group(fault_cost)
+                    .elasticX(true)
+                    .ordering(function(d) { return -d.value;})
+                    .on('filtered',onFiltered)
+                    .xAxis().ticks(5);
+
+        dc.renderAll();
+
+        AddXAxis(costgroup_chart, "Cost ($)");
+        AddXAxis(activity_chart, "Cost ($)");
+        AddXAxis(fault_chart, "Cost ($)");
+
+        window.onresize = function() {
+            costgroup_chart.width($('#costgroup_panel').width()).redraw();
+            activity_chart.width($('#activity_panel').width()).redraw();
+            fault_chart.width($('#fault_panel').width()).redraw();
+        }
+
+        function AddXAxis(chartToUpdate, displayText)
+            {
+                chartToUpdate.svg()
+                            .append("text")
+                            .attr("class", "x-axis-label")
+                            .attr("text-anchor", "middle")
+                            .attr("x", chartToUpdate.width()/2)
+                            .attr("y", chartToUpdate.height()-3.5)
+                            .text(displayText);
+            }
+        
+        function formatCostText(cost) {
+          var text='';
+          if (cost < 1000) {
+            text = "$" + Math.round(cost).toString()
+          }
+          else if (cost >= 1000 && cost < 10000) {
+            text = "$" + (cost/1000).toFixed(2).toString() + "K"
+          }
+          else if (cost >= 10000 && cost < 100000) {
+            text = "$" + (cost/1000).toFixed(1).toString() + "K"
+          }
+          else if (cost >= 100000 && cost < 1000000) {
+            text = "$" + (cost/1000).toFixed(0).toString() + "K"
+          }
+          else if (cost >= 1000000) {
+            text = "$" + (cost/1000000).toFixed(2).toString() + "M"
+          }
+          return text;
+        }
+        function calculateClusterInfo() {
+          console.log("calc")
+          maxCost = 0;
+          minCost = Infinity;
+          var top10 = []
+          var currentBottom = 0;
+
+          clusterSource.getFeatures().forEach(function(v){
+            var cost = v.get('total_cost');
+            minCost = minCost < cost ? minCost : cost;
+            maxCost = maxCost > cost ? maxCost : cost;
+
+            if(top10.length == 0) {
+                top10.push({cost: cost, geometry: v.getGeometry()})
+            }
+            else if(top10.length < 10 || (top10.length >=10 && cost > currentBottom)) {
+                var pushed = false
+                $.each(top10, function(i,j) {
+                    if(cost > j.cost) {
+                        top10.splice(i, 0, {cost: cost, geometry: v.getGeometry()})
+                        pushed = true
+                        return false
+                    }
+
+                });
+                if(top10.length < 10 && pushed == false)
+                    top10.push({cost: cost, geometry: v.getGeometry()})
+                
+            }
+
+            if(top10.length > 10){
+                top10.length = 10;
+                currentBottom = top10[9].cost
+            }
+
+
+          });
+
+        $("#fly").empty()
+        var clusterColour = d3.scale.linear().domain([minCost, ((maxCost - minCost) / 2) + minCost, maxCost]).range(['#66FF33','#FFFF00','#FF0000']);
+
+        console.log(top10.length)
+        $.each(top10, function(i,v) {
+            var hover = function(){
+                var $this = $(this);
+                var newBgc = $this.data('bgcolor');
+                $this.data('bgcolor', $this.css('background-color')).css('background-color', newBgc);
+            }
+            $('<a class="list-group-item text-center">' + formatCostText(v.cost) + '</a>').css('background-color',clusterColour(v.cost)).data('bgcolor','white').hover(hover).appendTo('#fly').click(function() {
+             var pan = ol.animation.pan({
+                duration: 2000,
+                source: (map.getView().getCenter())
+             });
+             map.beforeRender(pan);
+             map.getView().setCenter(v.geometry.getCoordinates());
+         });
+        })
+
+        }
+    });
+
+    </script>
+  
+
+{% endblock %}
